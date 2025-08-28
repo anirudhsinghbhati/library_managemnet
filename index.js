@@ -1,30 +1,64 @@
-document.getElementById("addbook").addEventListener("click", function getbook(){
-    let title = prompt("Enter book's title");
-    if(!title) return;
-    let author = prompt("Enter book's author");
-    if(!author)  return;
-    let pages = +prompt("Enter book's pages");
-     if (!pages || isNaN(pages)) return alert("only number for pages") , getbook();
-     
+// 📚 Library Management Template
 
-    let cardHTML = `
-        <div class="card">
-                <img src="Untitled.jpeg" alt="no image">
-            <div class="description">
-                <p>Title: ${title}</p>
-                <p>Author: ${author}</p>
-                <p>Pages: ${pages}</p>
-                <button class = "remove-btn">Remove</button>
-            </div>
-        </div>
+// Array to hold all books
+const myLibrary = [];
+
+// Book constructor
+function Book(title, author, pages) {
+  this.title = title;
+  this.author = author;
+  this.pages = pages;
+}
+
+// Function to add a book object to library array
+function addBookToLibrary(title, author, pages) {
+  const book = new Book(title, author, pages);
+  myLibrary.push(book);
+  displayBooks();
+}
+
+// Function to display books on the page
+function displayBooks() {
+  const shelf = document.querySelector(".book-shelf");
+  shelf.innerHTML = ""; // clear existing shelf
+
+  myLibrary.forEach((book, index) => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+      <img src="Untitled.jpeg" alt="no image">
+      <div class="description">
+        <p>Title: ${book.title}</p>
+        <p>Author: ${book.author}</p>
+        <p>Pages: ${book.pages}</p>
+        <button class="remove-btn" data-index="${index}">Remove</button>
+      </div>
     `;
 
-    document.querySelector(".book-shelf").insertAdjacentHTML('beforeend', cardHTML);
-    
+    shelf.appendChild(card);
+  });
+}
+
+// Handle Add Book button
+document.getElementById("addbook").addEventListener("click", () => {
+  const title = prompt("Enter book's title");
+  if (!title) return;
+
+  const author = prompt("Enter book's author");
+  if (!author) return;
+
+  const pages = +prompt("Enter book's pages");
+  if (!pages || isNaN(pages)) return alert("Only numbers allowed for pages");
+
+  addBookToLibrary(title, author, pages);
 });
 
-document.querySelector(".book-shelf").addEventListener("click", function (e) {
-    if (e.target.classList.contains("remove-btn")) {
-        e.target.closest(".card").remove();
-    }
+// Handle Remove Book button
+document.querySelector(".book-shelf").addEventListener("click", (e) => {
+  if (e.target.classList.contains("remove-btn")) {
+    const index = e.target.dataset.index;
+    myLibrary.splice(index, 1); // remove from array
+    displayBooks(); // re-render the shelf
+  }
 });
